@@ -31,7 +31,7 @@ export default class ProductDetails extends React.Component<IDetailProps, IDetai
                     <p><b>Number: </b>{product.number}</p>
                     <p><b>Description: </b>{product.description}</p>
                     {images.map(img => (
-                        <img src={img.url} alt={img.name}/>
+                        <img key={img.name} src={img.url} alt={img.name}/>
                     ))}
                 </div>;
         } else {
