@@ -77,4 +77,12 @@ export const getImagesById = async (productId: string) =>
                         return null;
                     });
 
+export const updateProductData = (product: Product) =>
+    productCollection.doc(product.id).update({...product});
+
+export const updateProductImages = (productId: string, images: {id: string, url: string, name: string}[]) =>
+    images.forEach(img => {
+        productCollection.doc(productId).collection('images').doc(img.id).update({...img});
+    });
+
 export default firebase;

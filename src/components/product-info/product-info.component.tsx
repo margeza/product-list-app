@@ -7,7 +7,10 @@ export const ProductInfo: React.FunctionComponent<ProductInfoProps> = ({ product
         <p><b>Number: </b>{product.number}</p>
         <p><b>Description: </b>{product.description}</p>
         {images.map(img => (
-            <img key={img.id} src={img.url} alt={img.name}/>
+            <div>
+                <p><b>Image name: </b>{img.name}</p>
+                <img key={img.id} src={img.url} alt={img.name}/>
+            </div>
         ))}
     </div>
 );
