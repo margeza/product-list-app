@@ -1,7 +1,7 @@
 import React from 'react';
 import ProductList from '../../components/product-list/product-list.component'
 import Product from '../../interfaces/Product.interface';
-
+import './homepage.component.scss'
 import { getListOfProducts } from '../../firebase/firebase.utils'
 
 export default class HomePage extends React.Component<IHomePageProps, IHomePageState> {
@@ -21,7 +21,8 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
 
   render() {
     return (
-      <div>
+      <div className='home-page card'>
+        <h3>List of products</h3>
         <ProductList products={this.state.products} />
       </div>
     );
