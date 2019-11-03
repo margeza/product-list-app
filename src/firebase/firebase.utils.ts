@@ -16,87 +16,65 @@ const config = {
 firebase.initializeApp(config);
 
 export const firestore = firebase.firestore();
+export const productCollection = firestore.collection('products');
+
+const mapDataToProductObject = (productId: string, productData: firebase.firestore.DocumentData): Product => {
+    return {
+        "id": productId,
+        "name": productData.name,
+        "number": productData.number,
+        "description": productData.description
+    };
+    
+}
 
 export const getListOfProducts = () => 
-    firestore.collection('products')
-                    .get()
-                    .then(
-                        products => {
-                            let productList: Product[] = []
-                            products.docs.forEach(product => {
-                                const productId = product.id;
-                                const productData = product.data();
-                                productList.push(
-                                    {
-                                        "id": productId,
-                                        "name": productData.name,
-                                        "number": productData.number,
-                                        "description": productData.description
-                                    }
-                                );
-                            });
-                            return productList;
-                        });
-
-export const getProductById = async (productId: string) => {
-    const productDoc = firestore.collection('products').doc(productId);
-
-    // productDoc.get().then(product => {
-    //     if(product) {
-    //         const productId = product.id;
-    //         const productData = product.data();
-    //         if(productData) { 
-    //             return {
-    //                 "id": productId,
-    //                 "name": productData.name,
-    //                 "number": productData.number,
-    //                 "description": productData.description,
-    //                 "images": imagesArray
-    //             };
-    //         } else {
-    //             return null;
-    //         }
-    //     } else {
-    //         return null;
-    //     }
-    // });
-    
-
-
-    return productDoc.get()
-        .then(product => { if (product) {
-                                const productId = product.id;
-                                const productData = product.data();
-                                if(productData) {
-                                    return {
-                                        "id": productId,
-                                        "name": productData.name,
-                                        "number": productData.number,
-                                        "description": productData.description
-                                    }
+    productCollection.get()
+                    .then(products => {
+                        let productList: Product[] = []
+                        products.docs.forEach(product => {
+                            if (product) {
+                                const id = product.id;
+                                const data = product.data();
+                                if (data) {
+                                    productList.push(mapDataToProductObject(id, data));
                                 }
                             }
-                            return null;
                         });
-};
+                        return productList;
+                    });
 
-export const getImagesById = async (productId: string) => {
-    const productDoc = firestore.collection('products').doc(productId);
-    return productDoc.collection('images')
-        .get()
-        .then(images => {
-            if (images) {
-                let imagesArray: {url: string, name: string}[] = [];
-                images.docs.forEach(image => imagesArray.push(
-                    {
-                        "url": image.data().url, 
-                        "name": image.data().name
-                    }
-                ));
-                return imagesArray;
-            }
-            return null;
-        });
-};
+export const getProductById = async (productId: string) => 
+    productCollection.doc(productId)
+                    .get()
+                    .then(product => { 
+                        if (product) {
+                            const id = product.id;
+                            const data = product.data();
+                            if (data) {
+                                return mapDataToProductObject(id, data);
+                            }
+                        }
+                        return null;
+                    });
+
+export const getImagesById = async (productId: string) => 
+    productCollection.doc(productId)
+                    .collection('images')
+                    .get()
+                    .then(images => {
+                        if (images) {
+                            let imagesArray: {id: string, url: string, name: string}[] = [];
+                            images.docs.forEach(image => imagesArray.push(
+                                {
+                                    "id": image.id,
+                                    "url": image.data().url, 
+                                    "name": image.data().name
+                                }
+                            ));
+                            return imagesArray;
+                        }
+                        return null;
+                    });
 
 export default firebase;

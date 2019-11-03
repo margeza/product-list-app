@@ -6,7 +6,7 @@ export const ProductList: FunctionComponent<Props> = ({ products }) => (
     <ul className='product-list'>
         {
             products.map(product => (
-                <ListItem key={product.number} product={product}/>
+                <ListItem key={product.id} product={product}/>
             ))
         }
     </ul>

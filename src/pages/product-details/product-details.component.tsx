@@ -2,6 +2,8 @@ import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getProductById, getImagesById } from '../../firebase/firebase.utils'
 import Product from '../../interfaces/Product.interface';
+import ProductForm from '../../components/product-form/product-form.component';
+import ProductInfo from '../../components/product-info/product-info.component';
 
 export default class ProductDetails extends React.Component<IDetailProps, IDetailState> {
 
@@ -11,6 +13,7 @@ export default class ProductDetails extends React.Component<IDetailProps, IDetai
         this.state = {
             product: null,
             images: null,
+            forEdit: false,
         }
     }
     async componentWillMount() {
@@ -26,13 +29,13 @@ export default class ProductDetails extends React.Component<IDetailProps, IDetai
         const product = this.state.product;
         const images = this.state.images;
         if (product !== null && images !== null) {
-            return <div>
-                    <h3><b>Name: </b>{product.name}</h3>
-                    <p><b>Number: </b>{product.number}</p>
-                    <p><b>Description: </b>{product.description}</p>
-                    {images.map(img => (
-                        <img key={img.name} src={img.url} alt={img.name}/>
-                    ))}
+            return <div className='product-details'>
+                    <button 
+                        onClick={() => this.setState({ forEdit: !this.state.forEdit})}>
+                        { this.state.forEdit ? 'Save':'Edit'}
+                    </button>
+                    { !this.state.forEdit && <ProductInfo product={product} images={images} /> }
+                    { this.state.forEdit && <ProductForm /> }
                 </div>;
         } else {
             return <h5>Loading...</h5>;
@@ -46,5 +49,6 @@ interface IDetailProps extends RouteComponentProps<{ productId: string }> {
 
 interface IDetailState {
     product: Product| null;
-    images: {url: string, name: string}[] | null;
+    images: {id: string, url: string, name: string}[] | null;
+    forEdit: boolean;
 }
