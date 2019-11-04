@@ -1,6 +1,6 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { getProductById, getImagesById, updateProductData, updateProductImages } from '../../firebase/firebase.utils'
+import { getProductById, updateProductData } from '../../firebase/firebase.utils'
 import Product from '../../interfaces/Product.interface';
 import ProductInfo from '../../components/product-info/product-info.component';
 import { Link } from 'react-router-dom';
@@ -13,34 +13,41 @@ export default class ProductDetails extends React.Component<IDetailProps, IDetai
 
         this.state = {
             product: null,
-            images: null,
             forEdit: false,
         }
     }
     async componentWillMount() {
         const productId = this.props.match.params.productId;
         const prod = await getProductById(productId);
-        const img = await getImagesById(productId);
+        // if (prod){
+        //     console.log(prod.img[0]);
+        //     console.log(JSON.parse(JSON.stringify(prod.img)));
+        //     console.log(JSON.parse(prod.img)[0].name);
+        //     const imag = JSON.parse(prod.img);
+        //     imag.push({url: 'lalala', name: 'lalala'});
+        //     console.log(imag);
+        //     console.log(JSON.stringify(imag));
+
+        // } 
         this.setState({
             product: prod,
-            images: img,
         });
     }
 
-    handleSubmit(e:React.FormEvent<HTMLFormElement>) {
+    handleSubmit(e:React.FormEvent<HTMLFormElement>): void {
         e.preventDefault();
-        const {product, images} = this.state;
-        if (product !== null && images !== null) {
+        const product = this.state.product;
+        if (product !== null) {
             updateProductData(product)
-            .then(() => updateProductImages(product.id, images))
             .then(() => this.setState({ forEdit: false}));
         }
     }
 
-    setImageValue(e: any, id: string, type: string) {
-        if (this.state.images !== null) {
-            const newImagesList = this.state.images.map(img => {
-                if(img.id === id) {
+    setImageValue(e: any, id: number, type: string): void {
+        if (this.state.product !== null) {
+            const images = JSON.parse(this.state.product.images);
+            const newImagesList = images.map((img: Image, index: number) => {
+                if(index === id) {
                     if (type === 'name'){
                         return {...img, name: e.target.value};
                     } else {
@@ -50,17 +57,25 @@ export default class ProductDetails extends React.Component<IDetailProps, IDetai
                     return {...img};
                 }
             });
-
-            this.setState({
-                images: newImagesList,
-            });
+            const product = this.state.product;
+            this.setState({product: {...product, images: JSON.stringify(newImagesList)}, });
         }
 
     }
 
+    addNewImage(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+        e.preventDefault();
+        const product = this.state.product;
+        if (product !== null) {
+            const images = JSON.parse(product.images);
+            images.push({url: '',  name: ''});
+            this.setState({product: {...product, images: JSON.stringify(images)}, });
+        }
+    }
+
     render() {
-        const {product, images, forEdit} = this.state;
-        if (product !== null && images !== null) {
+        const {product, forEdit} = this.state;
+        if (product !== null) {
             return <div className='product-details'>
                     {!forEdit && 
                         <div className='card content'>
@@ -78,7 +93,7 @@ export default class ProductDetails extends React.Component<IDetailProps, IDetai
                                     { forEdit ? 'Save':'Edit'}
                                 </button>
                             </div>
-                            <ProductInfo product={product} images={images} />
+                            <ProductInfo product={product} />
                         </div>
                     }
                     
@@ -89,58 +104,72 @@ export default class ProductDetails extends React.Component<IDetailProps, IDetai
                                 <div className='form-group'>
                                     <label>Name:</label>
                                     <input 
+                                        required
                                         id='name'
                                         type="text"
                                         placeholder="Name"
                                         defaultValue={product.name || ''}
-                                        onChange={e => this.setState({product: {...product, name: e.target.value}})}
+                                        onChange={e => this.setState({product: {...product, name: e.target.value},})}
                                     />
                                 </div>
                                 <div className='form-group'>
                                     <label>Number:</label>
                                     <input 
+                                        required
                                         type="text"
                                         placeholder="Number"
                                         defaultValue={product.number || ''}
-                                        onChange={e => this.setState({product: {...product, number: e.target.value}})}
+                                        onChange={e => this.setState({product: {...product, number: e.target.value},})}
                                     />
                                 </div>
                                 <div className='form-group'>
                                     <label>Description:</label>
                                     <input 
+                                        required
                                         type="text"
                                         placeholder="Description"
                                         defaultValue={product.description || ''}
-                                        onChange={e => this.setState({product: {...product, description: e.target.value}})}
+                                        onChange={e => this.setState({product: {...product, description: e.target.value},})}
                                     />
                                 </div>
                                 
                                 {
-                                    images.map(img => (
-                                        <div className='image-container'>
+                                    JSON.parse(product.images).map((img: Image, index: number) => (
+                                        <div key={index} className='image-container'>
                                             <div className='form-group'>
                                                 <label>Image name:</label>
                                                 <input 
+                                                    required
                                                     type="text"
                                                     placeholder="Image name"
                                                     defaultValue={img.name || ''}
-                                                    onChange={e => this.setImageValue(e, img.id, 'name')}
+                                                    onChange={e => this.setImageValue(e, index, 'name')}
                                                 />
                                             </div>
                                             <div className='form-group'>
                                                 <label>Image url:</label>
                                                 <input 
+                                                    required
                                                     type="text"
                                                     placeholder="Image url"
                                                     defaultValue={img.url || ''}
-                                                    onChange={e => this.setImageValue(e, img.id, 'url')}
+                                                    onChange={e => this.setImageValue(e, index, 'url')}
                                                 />
                                             </div>
                                         </div> 
                                     ))
                                 }
+                                <div className='d-flex justify-content-end'>
+                                    <button 
+                                        className="add-button btn btn-secondary"
+                                        onClick={e => this.addNewImage(e)}
+                                    >+</button>
+                                </div>
                                 <div className='d-flex justify-content-center'>
-                                    <button type='submit' className="submit-button btn btn-primary">Save</button>
+                                    <button 
+                                        type='submit' 
+                                        className="submit-button btn btn-primary"
+                                    >Save</button>
                                 </div>
                             </form>
                         </div>
@@ -158,6 +187,7 @@ interface IDetailProps extends RouteComponentProps<{ productId: string }> {
 
 interface IDetailState {
     product: Product| null;
-    images: {id: string, url: string, name: string}[] | null;
     forEdit: boolean;
 }
+
+interface Image {url: string, name: string}

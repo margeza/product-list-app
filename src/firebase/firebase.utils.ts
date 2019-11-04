@@ -23,9 +23,9 @@ const mapDataToProductObject = (productId: string, productData: firebase.firesto
         "id": productId,
         "name": productData.name,
         "number": productData.number,
-        "description": productData.description
+        "description": productData.description,
+        "images": productData.images,
     };
-    
 }
 
 export const getListOfProducts = () => 
@@ -58,31 +58,7 @@ export const getProductById = async (productId: string) =>
                         return null;
                     });
 
-export const getImagesById = async (productId: string) => 
-    productCollection.doc(productId)
-                    .collection('images')
-                    .get()
-                    .then(images => {
-                        if (images) {
-                            let imagesArray: {id: string, url: string, name: string}[] = [];
-                            images.docs.forEach(image => imagesArray.push(
-                                {
-                                    "id": image.id,
-                                    "url": image.data().url, 
-                                    "name": image.data().name
-                                }
-                            ));
-                            return imagesArray;
-                        }
-                        return null;
-                    });
-
 export const updateProductData = (product: Product) =>
     productCollection.doc(product.id).update({...product});
-
-export const updateProductImages = (productId: string, images: {id: string, url: string, name: string}[]) =>
-    images.forEach(img => {
-        productCollection.doc(productId).collection('images').doc(img.id).update({...img});
-    });
 
 export default firebase;
