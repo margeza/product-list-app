@@ -28,7 +28,7 @@ const mapDataToProductObject = (productId: string, productData: firebase.firesto
     };
 }
 
-export const getListOfProducts = () => 
+export const getListOfProducts = (): Promise<Product[]> => 
     productCollection.get()
                     .then(products => {
                         let productList: Product[] = []
@@ -44,7 +44,7 @@ export const getListOfProducts = () =>
                         return productList;
                     });
 
-export const getProductById = async (productId: string) => 
+export const getProductById = async (productId: string): Promise<Product | null> => 
     productCollection.doc(productId)
                     .get()
                     .then(product => { 
@@ -58,7 +58,7 @@ export const getProductById = async (productId: string) =>
                         return null;
                     });
 
-export const updateProductData = (product: Product) =>
+export const updateProductData = (product: Product): Promise<void> =>
     productCollection.doc(product.id).update({...product});
 
 export default firebase;

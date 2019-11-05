@@ -18,17 +18,7 @@ export default class ProductDetails extends React.Component<IDetailProps, IDetai
     }
     async componentWillMount() {
         const productId = this.props.match.params.productId;
-        const prod = await getProductById(productId);
-        // if (prod){
-        //     console.log(prod.img[0]);
-        //     console.log(JSON.parse(JSON.stringify(prod.img)));
-        //     console.log(JSON.parse(prod.img)[0].name);
-        //     const imag = JSON.parse(prod.img);
-        //     imag.push({url: 'lalala', name: 'lalala'});
-        //     console.log(imag);
-        //     console.log(JSON.stringify(imag));
-
-        // } 
+        const prod = await getProductById(productId); 
         this.setState({
             product: prod,
         });

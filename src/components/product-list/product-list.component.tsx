@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react';
 import Product from '../../interfaces/Product.interface'
 import ListItem from '../list-item/list-item.component';
 
-export const ProductList: FunctionComponent<Props> = ({ products }) => (
+export const ProductList: FunctionComponent<ProductListProps> = ({ products }) => (
     <div className='product-list list-group'>
         {
             products.map(product => (
@@ -12,7 +12,7 @@ export const ProductList: FunctionComponent<Props> = ({ products }) => (
     </div>
 );
 
-interface Props {
+interface ProductListProps {
     products: Product[];
 }
 
