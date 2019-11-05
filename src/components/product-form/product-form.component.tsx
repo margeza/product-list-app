@@ -1,8 +1,9 @@
 import React from 'react';
 import FormInput from "../../components/form-input/form-input.component";
 import Product from '../../interfaces/Product.interface';
+import './product-form.component.scss';
 
-const ProductForm: React.FunctionComponent<ProductFormProps> = ({handleChange, handleSubmit, addNewImage, product}) => (
+const ProductForm: React.FunctionComponent<ProductFormProps> = ({handleChange, handleSubmit, addNewImage, removeImage, product}) => (
     <div className='card content'>
         <h3>Edit product details</h3>
         <form onSubmit={e => handleSubmit(e)}>
@@ -30,7 +31,10 @@ const ProductForm: React.FunctionComponent<ProductFormProps> = ({handleChange, h
             
             {
                 JSON.parse(product.images).map((img: Image, index: number) => (
-                    <div key={index} className='image-container'>
+                    <div key={index} className='image-container card pl-2 pr-2 pb-2 mb-2'>
+                        <div className='w-100'>
+                            <button className="remove-button" onClick={e => removeImage(e, index)}>x</button>
+                        </div>
                         <FormInput
                             handleChange={handleChange}
                             label="Image name"
@@ -70,6 +74,7 @@ interface ProductFormProps {
     handleChange(event: React.FormEvent<HTMLInputElement>, index?: number): void;
     handleSubmit(event: React.FormEvent<HTMLFormElement>): void;
     addNewImage(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+    removeImage(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number): void;
     product: Product;
 }
 

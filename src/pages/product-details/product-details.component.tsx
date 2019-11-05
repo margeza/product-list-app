@@ -75,6 +75,24 @@ export default class ProductDetails extends React.Component<IDetailProps, IDetai
         }
     }
 
+    removeImage = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number): void => {
+        event.preventDefault();
+        const product = this.state.product;
+        if (product) {
+            const images = JSON.parse(product.images);
+            let newImagesList: Image[] = [];
+            images.forEach((img: Image, index: number) => {
+                console.log('index', index);
+                console.log('id', id);
+                console.log('new images list', newImagesList);
+                if(index !== id) {
+                    newImagesList.push(img);
+                }
+            })            
+            this.setState({product: {...product, images: JSON.stringify(newImagesList)}, });
+        }
+    }
+
     render() {
         const {product, forEdit} = this.state;
         if (product) {
@@ -104,6 +122,7 @@ export default class ProductDetails extends React.Component<IDetailProps, IDetai
                                     handleChange={this.handleChange} 
                                     handleSubmit={this.handleSubmit}
                                     addNewImage={this.addNewImage}
+                                    removeImage={this.removeImage}
                                     product={product}/> 
                     }
                 </div>;
